@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembe Köşk Menü</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400;500;600&display=swap');
+
+        :root {
+            --font-serif: 'Playfair Display', serif;
+            --font-sans: 'Outfit', sans-serif;
+            --font-hand: 'Caveat', cursive;
+        }
+
+        body {
+            margin: 0;
+            background-color: #fdf5f6;
+            color: #333333;
+            font-family: var(--font-sans);
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .font-serif { font-family: var(--font-serif); }
+        .font-hand { font-family: var(--font-hand); }
+        
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(0.5deg); }
+        }
+
+        .animate-float {
+            animation: float 7s ease-in-out infinite;
+        }
+
+        @keyframes thumb-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(244, 114, 182, 0.4); }
+            50% { box-shadow: 0 0 25px rgba(244, 114, 182, 0.8); }
+        }
+        
+        .thumb-active {
+            animation: thumb-glow 3s infinite;
+        }
+
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        
+        .flip-card-inner {
+            display: grid;
+            width: 100%;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        
+        .is-flipped {
+            transform: rotateY(180deg);
+        }
+        
+        .flip-card-front, .flip-card-back {
+            grid-area: 1 / 1;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            width: 100%;
+        }
+        
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body class="selection:bg-white/20">
+
+    <div id="app" class="relative w-screen h-screen overflow-hidden bg-[#fdf5f6]"></div>
+
+    <script>
+        const dishes = [
+            {
+                id: 0,
+                isMenu: true,
+                name: "Pembe Köşk",
+                course: "SOSYAL TESİSİ",
+                shortDesc: "Geleneksel tatların modern dokunuşlarla harmanlandığı, özenle tasarlanmış gastronomik yolculuğumuza hoş geldiniz.",
+                images: [
+                    "https://i.imgur.com/rc4O5Q9.jpeg",
+                    "https://i.imgur.com/9rdiInI.jpeg",
+                    "https://i.imgur.com/I5WbDOI.jpeg"
+                ],
+                menuItems: [
+                    "Avokado Soslu Tavuklu Makarna",
+                    "Pembe Köşk Makarna",
+                    "Tarhana Soslu Kırmızı Et"
+                ],
+                image: "https://i.imgur.com/rc4O5Q9.jpeg",
+                glowColor: "rgba(255, 255, 255, 0.15)",
+                ingredients: [],
+                recipe: "",
+                fullRecipeSteps: []
+            },
+            {
+                id: 1,
+                name: "Avokado Soslu Tavuklu Makarna",
+                course: "Ana Yemek 01",
+                shortDesc: "Taze lime ve sızma zeytinyağı ile tatlandırılmış ipeksi avokado sosuyla harmanlanmış el yapımı makarna, yanında mühürlenmiş ızgara tavuk dilimleri.",
+                ingredients: ["Olgun Avokado", "Izgara Tavuk", "Kapya Biber", "Lime Suyu", "Kırmızı Soğan", "Taze Fesleğen"],
+                recipe: "Taze avokadolar ezilerek ince doğranmış sebzeler ve lime suyu ile mayonez kıvamına getirilir. Makarna krema ile tavada çevrilip taze avokado sosuyla bağlanır.",
+                fullRecipeSteps: [
+                    "<strong>Sos Hazırlığı:</strong> Olgunlaşmış avokadoları mayonez tenceresinde ezin. Kapya biber ve kırmızı soğanı sıçan dişi doğrayıp zeytinyağı, lime suyu, tuz ve karabiber ile birlikte avokadoya karıştırın.",
+                    "<strong>Makarna & Tavuk:</strong> Makarnayı tavaya alın; içerisine taze krema ve kendi nişastalı suyunu ekleyin. Hazırladığınız avokado sosunu ilave edip tavada sallayarak sosu makarnaya yedirin. Tavukları ızgarada pişirip ince dilimleyin.",
+                    "<strong>Tabaklama:</strong> Tabakta dilimlenmiş taze avokadoların üzerine küp kapya biber, maydanoz tozu ve yeşil yağ gezdirin. Makarnayı fesleğen yaprağı ve taze lime rendesi ile taçlandırarak servis edin."
+                ],
+                image: "https://i.imgur.com/rc4O5Q9.jpeg",
+                glowColor: "rgba(134, 239, 172, 0.15)"
+            },
+            {
+                id: 2,
+                name: "Pembe Köşk Makarna",
+                course: "Ana Yemek 02",
+                shortDesc: "Fırınlanmış taze pancar püresi ve hafif kremayla lezzetlendirilmiş, taze beyaz peynir küpleri ve parmesan dokunuşlu imza lezzet.",
+                ingredients: ["Taze Pancar", "Beyaz Peynir Küpleri", "Parmesan", "Sarımsak", "Taze Fesleğen", "Tereyağı", "Maydanoz Tozu"],
+                recipe: "Sote sarımsak ve haşlanmış pancarlar, taze kekik ve fesleğenle kaynatılıp blenderda pürüzsüz ipeksi bir püre haline getirilir.",
+                fullRecipeSteps: [
+                    "<strong>Pancar Sosu:</strong> Sarımsakları tavada zeytinyağında soteleyin. Haşlanmış pancarları, makarna suyu, tuz, karabiber, kekik ve fesleğen ile birlikte 2 dakika kaynatıp blenderdan geçirerek pürüzsüz bir püre elde edin.",
+                    "<strong>Makarna Harmanı:</strong> Makarnayı tavaya alın, hazırlanan pancar püresi ve taze kremayı ilave ederek sosu tamamen çekene kadar kısık ateşte çevirin.",
+                    "<strong>Tabaklama:</strong> Makarnayı tabağa yerleştirin. Üzerine küp beyaz peynir, parmesan, küp pancar ve tek yaprak taze fesleğen ekleyin. Tabağın kenarlarını maydanoz tozu ve yeşil yağ ile süsleyerek tamamlayın."
+                ],
+                image: "https://i.imgur.com/9rdiInI.jpeg",
+                glowColor: "rgba(244, 114, 182, 0.15)"
+            },
+            {
+                id: 3,
+                name: "Tarhana Soslu Kırmızı Et",
+                course: "Ana Yemek 03",
+                shortDesc: "Tercihe göre mühürlenmiş premium kırmızı et; narenciye asiditeli acılı geleneksel tarhana sosu ve fırınlanmış kök sebze garnitürü ile.",
+                ingredients: ["Premium Et", "Geleneksel Tarhana", "Chilli Biberi", "Tatlı Patates", "Taze Narenciye", "Chimichurri Sos"],
+                recipe: "Kök sebzeler fırınlanır. Tarhana, taze narenciye ve chilli biberi ile çektirilir. Et arzu edilen derecede mühürlenip tian dizilimi ile servis edilir.",
+                fullRecipeSteps: [
+                    "<strong>Sebze Garnitür:</strong> Kabak, patlıcan, tatlı patates ve pancar ince dilimlenip zeytinyağı ve tuz ile fırınlanır. Elastik kıvama gelen sebzeler tian formunda art arda dizilip yan yatırılarak tabağa alınır.",
+                    "<strong>Acılı Tarhana Sos:</strong> Sarımsak, soğan ve chilli biberi sotelenir. Portakal ve limon suyu, domates, fesleğen eklenip pişirilir. Suyla açılmış tarhana ilave edilerek bağlanır. Tereyağı, tuz ve karabiber eklendikten sonra püre kıvamına gelene dek blenderdan çekilir.",
+                    "<strong>Chimichurri & Sunum:</strong> İnce doğranmış sarımsak, kapya biber ve maydanoz zeytinyağı ile birleştirilip sebzelerin üzerine dökülür. İstenilen derecede pişmiş kırmızı et sos yatağına yerleştirilerek servis edilir."
+                ],
+                image: "https://i.imgur.com/I5WbDOI.jpeg",
+                glowColor: "rgba(249, 115, 22, 0.15)"
+            }
+        ];
+
+        let currentIndex = 0;
+        let isAnimating = false;
+
+        function initApp() {
+            const app = document.getElementById('app');
+            
+            const generateWavyBg = () => {
+                let paths = '';
+                for(let i=0; i<60; i++) {
+                    let y = i * 25 - 400;
+                    paths += `<path d="M -200 ${y} Q 200 ${y + 200}, 600 ${y} T 1400 ${y + 100} T 2200 ${y - 100}" stroke="#f4d9df" stroke-width="4" />`;
+                }
+                for(let i=0; i<40; i++) {
+                    let y = i * 40 - 400;
+                    paths += `<path d="M -200 ${y} Q 300 ${y - 150}, 800 ${y + 50} T 1800 ${y - 50}" stroke="#f8e7ea" stroke-width="8" opacity="0.6"/>`;
+                }
+                return `
+                <div class="absolute inset-0 z-0 bg-[#fdf5f6]">
+                    <svg class="w-full h-full object-cover opacity-100" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+                        <g fill="none">
+                            ${paths}
+                        </g>
+                    </svg>
+                </div>`;
+            };
+
+            const mainBackgroundHtml = generateWavyBg();
+
+            const slidesHtml = dishes.map((dish, index) => {
+                if (dish.isMenu) {
+                    return `
+                    <div id="slide-${index}" class="absolute inset-0 flex flex-col-reverse md:flex-row items-center justify-center p-6 md:p-20 gap-8 lg:gap-20 transition-all duration-1000 ease-[cubic-bezier(0.25,1,0.5,1)] translate-y-24 md:translate-y-0 md:translate-x-32 scale-95 opacity-0 z-0 pointer-events-none">
+                        <div id="slide-text-${index}" class="w-full md:w-1/2 max-w-xl transition-all duration-1000 delay-100 translate-y-10 opacity-0">
+                            <div class="relative p-8 md:p-12 rounded-[2rem] bg-white/70 backdrop-blur-xl border border-pink-200/60 shadow-[0_8px_32px_rgba(200,150,160,0.2)] overflow-y-auto max-h-[50vh] md:max-h-none hide-scrollbar">
+                                <div class="absolute inset-0 rounded-[2rem] opacity-40 blur-2xl pointer-events-none" style="background-color: ${dish.glowColor}"></div>
+                                <div class="relative z-10">
+                                    <h1 class="font-hand text-7xl md:text-8xl lg:text-9xl mb-1 leading-none text-gray-900 drop-shadow-sm">${dish.name}</h1>
+                                    <span class="block text-xl md:text-2xl tracking-[0.2em] md:tracking-[0.3em] text-gray-600 uppercase font-light mb-6 ml-1">${dish.course}</span>
+                                    <p class="text-gray-700 text-base md:text-lg leading-relaxed font-normal mb-8 pb-6 border-b border-pink-200">${dish.shortDesc}</p>
+                                    <div class="space-y-4">
+                                        ${dish.menuItems.map((item, i) => `
+                                            <div class="flex items-center gap-4 group cursor-pointer bg-white/60 hover:bg-pink-50 p-3 rounded-2xl transition-all border border-pink-100 hover:border-pink-300" onclick="handleNav(${i + 1})">
+                                                <div class="w-10 h-10 shrink-0 rounded-full border border-pink-300 flex items-center justify-center text-pink-600 group-hover:bg-pink-200 transition-colors font-serif font-semibold">0${i + 1}</div>
+                                                <h3 class="font-serif text-lg md:text-xl text-gray-800 transition-colors">${item}</h3>
+                                                <div class="ml-auto opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <svg class="w-5 h-5 text-pink-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="slide-img-${index}" class="w-full md:w-1/2 flex justify-center items-center transition-all duration-1000 delay-200 translate-x-10 opacity-0">
+                            <div class="relative w-[80vw] h-[45vh] md:w-[35vw] md:h-[65vh] max-w-lg max-h-[800px] animate-float flex flex-col gap-3 md:gap-5">
+                                <div class="flex-1 w-full rounded-2xl md:rounded-3xl overflow-hidden border-2 border-white shadow-xl relative group cursor-pointer" onclick="handleNav(1)" title="Avokado Soslu Tavuklu Makarna'ya Git">
+                                    <div class="absolute inset-0 bg-white/10 group-hover:bg-transparent transition-colors duration-500 z-10 pointer-events-none"></div>
+                                    <img src="${dish.images[0].replace(/\\/g, '/')}" alt="Pic 1" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                </div>
+                                <div class="flex-1 w-full rounded-2xl md:rounded-3xl overflow-hidden border-2 border-white shadow-xl relative group cursor-pointer" onclick="handleNav(2)" title="Pembe Köşk Makarna'ya Git">
+                                    <div class="absolute inset-0 bg-white/10 group-hover:bg-transparent transition-colors duration-500 z-10 pointer-events-none"></div>
+                                    <img src="${dish.images[1].replace(/\\/g, '/')}" alt="Pic 2" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                </div>
+                                <div class="flex-1 w-full rounded-2xl md:rounded-3xl overflow-hidden border-2 border-white shadow-xl relative group cursor-pointer" onclick="handleNav(3)" title="Tarhana Soslu Kırmızı Et'e Git">
+                                    <div class="absolute inset-0 bg-white/10 group-hover:bg-transparent transition-colors duration-500 z-10 pointer-events-none"></div>
+                                    <img src="${dish.images[2].replace(/\\/g, '/')}" alt="Pic 3" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                } else {
+                    const ingredientsHtml = dish.ingredients.map(ing => `
+                        <span class="px-4 py-2 rounded-full bg-pink-50 border border-pink-200 text-sm md:text-base text-pink-900 hover:bg-pink-100 transition-colors font-medium">${ing}</span>
+                    `).join('');
+
+                    const fullRecipeHtml = dish.fullRecipeSteps.map(step => `
+                        <p class="mb-5 text-gray-700">${step}</p>
+                    `).join('');
+
+                    return `
+                    <div id="slide-${index}" class="absolute inset-0 flex flex-col-reverse md:flex-row items-center justify-center p-6 md:p-20 gap-8 lg:gap-20 transition-all duration-1000 ease-[cubic-bezier(0.25,1,0.5,1)] translate-y-24 md:translate-y-0 md:translate-x-32 scale-95 opacity-0 z-0 pointer-events-none">
+                        <div id="slide-text-${index}" class="w-full md:w-1/2 max-w-xl transition-all duration-1000 delay-100 translate-y-10 opacity-0 perspective-1000">
+                            <div id="flip-inner-${index}" class="flip-card-inner">
+                                <div class="flip-card-front relative p-8 md:p-12 rounded-[2rem] bg-white/70 backdrop-blur-xl border border-pink-200/60 shadow-[0_8px_32px_rgba(200,150,160,0.2)] overflow-y-auto max-h-[50vh] md:max-h-none hide-scrollbar group hover:border-pink-300 transition-colors duration-500">
+                                    <button onclick="toggleFlip(${index})" class="absolute top-6 right-6 p-3 rounded-full bg-white/80 hover:bg-pink-100 transition-colors border border-pink-200 text-pink-600 hover:text-pink-800 z-30 focus:outline-none" title="Tam Tarifi Gör">
+                                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                    </button>
+                                    <div class="absolute inset-0 rounded-[2rem] opacity-30 blur-2xl transition-opacity duration-700 group-hover:opacity-50 pointer-events-none" style="background-color: ${dish.glowColor}"></div>
+                                    <div class="relative z-10 pr-12">
+                                        <span class="text-sm md:text-base tracking-[0.3em] text-pink-600 uppercase font-semibold">${dish.course}</span>
+                                        <h1 class="font-serif text-4xl md:text-5xl lg:text-6xl mt-4 mb-6 leading-tight text-gray-900 drop-shadow-sm">${dish.name}</h1>
+                                        <p class="text-gray-700 text-base md:text-lg leading-relaxed font-normal mb-8">${dish.shortDesc}</p>
+                                        <div class="mb-8">
+                                            <h3 class="text-sm md:text-base tracking-widest text-gray-500 uppercase mb-4 flex items-center gap-2 font-medium">
+                                                <svg class="w-5 h-5 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                                                </svg>
+                                                Ana Malzemeler
+                                            </h3>
+                                            <div class="flex flex-wrap gap-3">${ingredientsHtml}</div>
+                                        </div>
+                                        <div class="pt-6 border-t border-pink-200">
+                                            <h3 class="text-sm md:text-base tracking-widest text-gray-500 uppercase mb-3 flex items-center gap-2 font-medium">
+                                                <svg class="w-5 h-5 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                                                </svg>
+                                                Şefin Dokunuşu
+                                            </h3>
+                                            <p class="text-base md:text-lg text-gray-800 leading-relaxed font-normal italic">"${dish.recipe}"</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flip-card-back relative p-8 md:p-12 rounded-[2rem] bg-white/70 backdrop-blur-xl border border-pink-200/60 shadow-[0_8px_32px_rgba(200,150,160,0.2)] overflow-y-auto max-h-[50vh] md:max-h-none hide-scrollbar group hover:border-pink-300 transition-colors duration-500">
+                                    <button onclick="toggleFlip(${index})" class="absolute top-6 right-6 p-3 rounded-full bg-white/80 hover:bg-pink-100 transition-colors border border-pink-200 text-pink-600 hover:text-pink-800 z-30 focus:outline-none" title="Yemeğe Dön">
+                                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                        </svg>
+                                    </button>
+                                    <div class="absolute inset-0 rounded-[2rem] opacity-30 blur-2xl transition-opacity duration-700 group-hover:opacity-50 pointer-events-none" style="background-color: ${dish.glowColor}"></div>
+                                    <div class="relative z-10 pr-12">
+                                        <span class="text-sm md:text-base tracking-[0.3em] text-pink-600 uppercase font-semibold">Tam Tarif</span>
+                                        <h2 class="font-serif text-3xl md:text-4xl mt-4 mb-6 leading-tight text-gray-900 drop-shadow-sm">${dish.name}</h2>
+                                        <div class="pt-6 border-t border-pink-200">
+                                            <div class="space-y-4 text-base md:text-lg font-normal leading-relaxed text-gray-700">
+                                                ${fullRecipeHtml}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="slide-img-${index}" class="w-full md:w-1/2 flex justify-center items-center transition-all duration-1000 delay-200 translate-x-10 opacity-0">
+                            <div class="relative w-[80vw] h-[30vh] md:w-[40vw] md:h-[60vh] max-w-2xl max-h-[700px] group animate-float">
+                                <div class="absolute -inset-4 bg-gradient-to-r blur-3xl opacity-30 group-hover:opacity-50 transition-opacity duration-700 rounded-full" style="background-image: radial-gradient(circle, ${dish.glowColor} 0%, transparent 70%)"></div>
+                                <img src="${dish.image.replace(/\\/g, '/')}" alt="${dish.name}" class="relative w-full h-full object-cover rounded-3xl md:rounded-[3rem] shadow-[0_20px_50px_rgba(200,150,160,0.5)] border-4 border-white transition-transform duration-700 group-hover:scale-[1.03]" />
+                                <div class="absolute inset-0 rounded-3xl md:rounded-[3rem] border border-pink-200 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+                            </div>
+                        </div>
+                    </div>`;
+                }
+            }).join('');
+
+            const dotsHtml = dishes.map((_, index) => `<div id="dot-${index}" class="h-0.5 rounded-full transition-all duration-500 w-2 bg-pink-300"></div>`).join('');
+            
+            const thumbsHtml = dishes.map((dish, index) => {
+                const thumbImage = dish.isMenu ? dish.images[0] : dish.image;
+                const labelHtml = dish.isMenu ? `<div class="absolute inset-0 flex items-center justify-center bg-pink-900/40 opacity-0 group-hover:opacity-100 transition-opacity"><span class="text-white text-xs font-serif font-bold">MENÜ</span></div>` : '';
+                
+                return `
+                <button id="thumb-${index}" onclick="handleNav(${index})" class="relative overflow-hidden rounded-xl md:rounded-2xl transition-all duration-500 ease-out focus:outline-none w-16 h-12 md:w-20 md:h-14 border border-white/50 opacity-60 hover:opacity-100 hover:w-20 md:hover:w-24 group shadow-md bg-white">
+                    <img src="${thumbImage.replace(/\\/g, '/')}" alt="${dish.name}" class="w-full h-full object-cover mix-blend-multiply" />
+                    ${labelHtml}
+                    <div id="thumb-overlay-${index}" class="absolute inset-0 bg-white/20 hidden"></div>
+                </button>
+            `}).join('');
+
+            const uiContainerHtml = `
+                <div class="relative z-10 w-full h-full flex flex-col md:flex-row items-center justify-center pt-8 pb-32 md:py-16 px-6 lg:px-24">
+                    ${slidesHtml}
+                </div>
+                <div class="absolute bottom-6 md:bottom-12 left-0 w-full z-50 flex flex-col items-center gap-4">
+                    <div class="flex gap-3 mb-2">${dotsHtml}</div>
+                    <div class="flex justify-center items-center gap-3 md:gap-5 px-4">${thumbsHtml}</div>
+                </div>
+            `;
+
+            app.innerHTML = mainBackgroundHtml + uiContainerHtml;
+            updateView();
+        }
+
+        function toggleFlip(index) {
+            const inner = document.getElementById(`flip-inner-${index}`);
+            if (inner) {
+                inner.classList.toggle('is-flipped');
+            }
+        }
+
+        function updateView() {
+            dishes.forEach((dish, index) => {
+                const isActive = index === currentIndex;
+                const isPast = index < currentIndex;
+
+                const slide = document.getElementById(`slide-${index}`);
+                let transformClass = 'translate-y-24 md:translate-y-0 md:translate-x-32 scale-95 opacity-0 z-0 pointer-events-none';
+                
+                if (isActive) transformClass = 'translate-y-0 md:translate-x-0 scale-100 opacity-100 z-20';
+                if (isPast) transformClass = '-translate-y-24 md:translate-y-0 md:-translate-x-32 scale-95 opacity-0 z-0 pointer-events-none';
+                
+                slide.className = `absolute inset-0 flex flex-col-reverse md:flex-row items-center justify-center p-6 md:p-20 gap-8 lg:gap-20 transition-all duration-1000 ease-[cubic-bezier(0.25,1,0.5,1)] ${transformClass}`;
+
+                const textCard = document.getElementById(`slide-text-${index}`);
+                const imgCard = document.getElementById(`slide-img-${index}`);
+                
+                if (isActive) {
+                    textCard.className = "w-full md:w-1/2 max-w-xl transition-all duration-1000 delay-100 translate-y-0 opacity-100 perspective-1000";
+                    imgCard.className = "w-full md:w-1/2 flex justify-center items-center transition-all duration-1000 delay-200 translate-x-0 opacity-100";
+                } else {
+                    textCard.className = "w-full md:w-1/2 max-w-xl transition-all duration-1000 delay-100 translate-y-10 opacity-0 perspective-1000";
+                    imgCard.className = "w-full md:w-1/2 flex justify-center items-center transition-all duration-1000 delay-200 translate-x-10 opacity-0";
+                }
+
+                if (!dish.isMenu) {
+                    const flipInner = document.getElementById(`flip-inner-${index}`);
+                    if (!isActive && flipInner && flipInner.classList.contains('is-flipped')) {
+                        flipInner.classList.remove('is-flipped');
+                    }
+                }
+
+                const dot = document.getElementById(`dot-${index}`);
+                dot.className = `h-0.5 rounded-full transition-all duration-500 ${isActive ? 'w-8 bg-pink-600' : 'w-2 bg-pink-300'}`;
+
+                const thumb = document.getElementById(`thumb-${index}`);
+                const overlay = document.getElementById(`thumb-overlay-${index}`);
+                
+                if (isActive) {
+                    thumb.className = "relative overflow-hidden rounded-xl md:rounded-2xl transition-all duration-500 ease-out focus:outline-none w-24 h-16 md:w-32 md:h-20 border-4 border-white thumb-active z-10 shadow-lg bg-white";
+                    overlay.classList.remove('hidden');
+                } else {
+                    thumb.className = "relative overflow-hidden rounded-xl md:rounded-2xl transition-all duration-500 ease-out focus:outline-none w-16 h-12 md:w-20 md:h-14 border border-white/50 opacity-60 hover:opacity-100 hover:w-20 md:hover:w-24 group shadow-md bg-white";
+                    overlay.classList.add('hidden');
+                }
+            });
+        }
+
+        function handleNav(index) {
+            if (index === currentIndex || isAnimating) return;
+            isAnimating = true;
+            currentIndex = index;
+            updateView();
+            setTimeout(() => {
+                isAnimating = false;
+            }, 1000); 
+        }
+
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
